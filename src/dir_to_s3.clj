@@ -1,18 +1,17 @@
-# dir-to-s3
-Skeleton code that uploads a directory to S3 using multipart upload etc.
+(ns dir-to-s3
+  (:require
+   [archive.directory :as dir]
+   [clojure.datafy :as d]
+   [chunked.output-stream :as c]
+   [chunked.multipart-upload :as mpu ])
+    (:import
+     (java.nio.file Paths)))
 
-Written as a POC, but possibly TransferManager in the S3 api could do much of this?
+(defn dir-to-s3 [dir s3 metadata]
+  (let [os (c/output-stream (mpu/create-buffer-sink s3 metadata))]
+    (dir/archive-directory dir dir/simple-path-pred os )))
 
-This might be a useful starting point for uploading db checkpoints, but there are
-outstanding issues related to consistency while uploading a 'live'
-directory
-
-# Basic Usage
-
-``` clj
-
-  (require 'dir-to-s3)
-  
+(comment
   (def s3-client (-> (software.amazon.awssdk.services.s3.S3AsyncClient/builder)
                      (.build)))
 
@@ -38,4 +37,4 @@ directory
   (doseq [upload-id (->> s3 mpu/list-multipart-uploads (map (comp :upload-id d/datafy)))]
     (.println *err* (str "aborting " upload-id))
     (mpu/abort-multipart-upload s3 upload-id))
-```
+  )

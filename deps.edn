@@ -1,0 +1,13 @@
+{:paths ["src" "resources" "test" "target/classes"]
+ :deps { org.clojure/test.check {:mvn/version "1.1.1"}
+        software.amazon.awssdk/s3 {:mvn/version "2.17.253"}
+        org.apache.commons/commons-compress {:mvn/version "1.21"}
+        org.clojure/tools.logging {:mvn/version "1.2.4"}
+        }
+
+ :jvm-opts ["-XX:+UnlockDiagnosticVMOptions -XX:Inline=false"]
+ :aliases {:dev {:extra-paths ["dev"]}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.7.7" :git/sha "1474ad6"}}
+                   :extra-paths ["dev"]
+                   :ns-default build}}
+}
