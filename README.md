@@ -7,6 +7,16 @@ This might be a useful starting point for uploading db checkpoints, but there ar
 outstanding issues related to consistency while uploading a 'live'
 directory
 
+
+# Build the java classes
+
+The project has a couple of .java classes to simplify some of the
+clj/java interop. These don't really have any functionality other than
+acting as wrappers, but need to be built.
+
+``` sh
+clj -T:build prep
+```
 # Basic Usage
 
 ``` clj
