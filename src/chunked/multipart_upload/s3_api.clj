@@ -1,6 +1,7 @@
 (ns chunked.multipart-upload.s3-api
   (:require
-   [clojure.datafy :as d])
+   [clojure.datafy :as d]
+   [clojure.core.protocols :refer [Datafiable]])
   (:import
    (software.amazon.awssdk.awscore AwsRequestOverrideConfiguration)
    (software.amazon.awssdk.services.s3.model
@@ -11,19 +12,11 @@
      Owner
      S3ResponseMetadata
      StorageClass
-     UploadPartResponse))
-  )
-
+     UploadPartResponse
+     S3Request$Builder)))
 
 (defn ->s3-metadata [m]
   {"xtdb-metadata" (pr-str m)})
-
-(defn override-api-timeouts
-  "Overrides the overall api call timeout (including retries)"
-  [^S3Request$Builder builder config]
-  (let [override-config (s3api/->aws-request-override-configuration
-                         (.overrideConfiguration builder) config)]
-    (.overrideConfiguration builder override-config)))
 
 (defn ->completed-part [{:keys [e-tag part-number] :as m}]
   (-> (CompletedPart/builder)
@@ -51,7 +44,15 @@
           api-call-attempt-timeout (.apiCallAttemptTimeout api-call-attempt-timeout))
       (.build)))
 
-(extend-protocol d/Datafiable
+(defn override-api-timeouts
+  "Overrides the overall api call timeout (including retries)"
+  [^S3Request$Builder builder config]
+  (let [override-config (->aws-request-override-configuration
+                         (.overrideConfiguration builder) config)]
+
+    (.overrideConfiguration builder override-config)))
+
+(extend-protocol Datafiable
   MultipartUpload
   (datafy [d]
     {:upload-id (.uploadId d)

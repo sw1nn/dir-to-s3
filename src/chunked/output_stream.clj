@@ -1,5 +1,5 @@
 (ns chunked.output-stream
-  (:require [completion-stage :as cs])
+  (:require [juc-interop.completion-stage :as cs])
   (:import
    (com.sw1nn.chunked ChunkedOutputStream ChunkedOutputStreamDelegate)
    (java.io Flushable IOException)
